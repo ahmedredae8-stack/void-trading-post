@@ -14,7 +14,7 @@ export const Route = createFileRoute("/settings")({
   component: SettingsPage,
 });
 
-function SettingsPage() {
+export function SettingsPage() {
   const { player } = usePlayer();
   const navigate = useNavigate();
   const [sound, setSound] = useState(true);

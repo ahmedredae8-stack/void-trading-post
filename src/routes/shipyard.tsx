@@ -32,7 +32,7 @@ const filters: { id: "all" | Rarity; label: string }[] = [
 ];
 
 
-function Shipyard() {
+export function Shipyard() {
   const [filter, setFilter] = useState<"all" | Rarity>("all");
   const [open, setOpen] = useState<Ship | null>(null);
   const [panel, setPanel] = useState<"dock" | "sell" | "crew">("dock");

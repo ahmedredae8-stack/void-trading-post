@@ -52,7 +52,7 @@ function series(seed: number, base: number) {
   });
 }
 
-function FishMarket() {
+export function FishMarket() {
   const [activeId, setActiveId] = useState(CATCH[0]!.id);
   const [qty, setQty] = useState(CATCH[0]!.stock);
   const [casting, setCasting] = useState(false);

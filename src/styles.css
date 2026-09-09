@@ -142,3 +142,771 @@
     color: var(--color-foreground);
   }
 }
+
+/* ── Island scene design system ───────────────────────────── */
+
+:root {
+  --sky: oklch(0.78 0.12 235);
+  --sea-light: oklch(0.85 0.09 215);
+  --gold: oklch(0.83 0.14 85);
+  --gold-deep: oklch(0.62 0.13 70);
+  --dock-bg: oklch(0.28 0.05 250 / 0.55);
+}
+
+@theme inline {
+  --color-sky: var(--sky);
+}
+
+/* ── Scene stage: video fills any device ─────────────────── */
+.scene-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.scene-stage > video,
+.scene-video {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ── Invisible but generous map hotspots ─────────────────── */
+.hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 999px;
+}
+
+.hotspot-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle, color-mix(in oklab, var(--gold) 30%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity 250ms ease;
+}
+
+.hotspot:hover .hotspot-ring,
+.hotspot:focus-visible .hotspot-ring {
+  opacity: 0.55;
+}
+
+.hotspot:active .hotspot-ring {
+  opacity: 0.85;
+}
+
+.hotspot-pin,
+.hotspot-label {
+  display: none;
+}
+
+/* ── Top HUD ─────────────────────────────────────────────── */
+.hud-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 46rem;
+  margin-inline: auto;
+}
+
+.hud-frame {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hud-row {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: auto repeat(4, minmax(0, 1fr));
+  align-items: center;
+  gap: clamp(0.15rem, 1.2vw, 0.6rem);
+  padding-inline: clamp(0.5rem, 3vw, 1.5rem);
+}
+
+.hud-slot {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.hud-ico {
+  height: clamp(0.85rem, 3.4vw, 1.25rem);
+  width: clamp(0.85rem, 3.4vw, 1.25rem);
+  flex: none;
+  object-fit: contain;
+}
+
+.hud-num {
+  font-size: clamp(0.6rem, 2.6vw, 0.9rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: oklch(0.98 0.02 90);
+  text-shadow: 0 1px 3px oklch(0 0 0 / 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hud-player {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.hud-avatar {
+  display: grid;
+  height: clamp(1.5rem, 6.5vw, 2.4rem);
+  width: clamp(1.5rem, 6.5vw, 2.4rem);
+  flex: none;
+  place-items: center;
+  border-radius: 999px;
+  border: 2px solid var(--gold);
+  background: linear-gradient(160deg, oklch(0.35 0.06 250), oklch(0.18 0.04 255));
+  box-shadow: 0 2px 8px oklch(0 0 0 / 0.6);
+}
+
+.hud-initials {
+  font-size: clamp(0.55rem, 2.4vw, 0.85rem);
+  font-weight: 900;
+  color: var(--gold);
+}
+
+.hud-name {
+  max-width: 6.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: clamp(0.6rem, 2.4vw, 0.85rem);
+  font-weight: 800;
+  color: oklch(0.98 0.02 90);
+  text-shadow: 0 1px 3px oklch(0 0 0 / 0.85);
+}
+
+/* ── Side controls ───────────────────────────────────────── */
+.ctl-btn {
+  display: grid;
+  height: 2.6rem;
+  width: 2.6rem;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--gold) 45%, transparent);
+  background: oklch(0.18 0.04 255 / 0.6);
+  color: oklch(0.97 0.02 90);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 16px oklch(0 0 0 / 0.45);
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.ctl-btn:hover {
+  transform: translateY(-2px);
+  background: oklch(0.24 0.05 255 / 0.75);
+}
+
+.phase-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--gold) 45%, transparent);
+  background: oklch(0.18 0.04 255 / 0.6);
+  padding: 0.2rem 0.55rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--gold);
+  backdrop-filter: blur(8px);
+}
+
+/* Bottom dock */
+.dock {
+  background: linear-gradient(
+    to top,
+    color-mix(in oklab, var(--dock-bg) 100%, transparent),
+    color-mix(in oklab, var(--dock-bg) 60%, transparent) 60%,
+    transparent
+  );
+  backdrop-filter: blur(8px);
+  border-top: 1px solid color-mix(in oklab, var(--gold) 45%, transparent);
+}
+
+.dock-btn {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 74px;
+  margin-inline: auto;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  filter: drop-shadow(0 6px 10px oklch(0.2 0.05 250 / 0.45));
+  transition:
+    transform 180ms ease,
+    filter 180ms ease;
+  animation: bob 4.5s ease-in-out infinite;
+}
+
+.dock-btn:hover {
+  transform: translateY(-6px) scale(1.06);
+  filter: drop-shadow(0 10px 16px oklch(0.2 0.05 250 / 0.55))
+    drop-shadow(0 0 10px color-mix(in oklab, var(--gold) 60%, transparent));
+}
+
+.dock-btn:active {
+  transform: translateY(-1px) scale(0.96);
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-btn {
+    animation: none;
+  }
+}
+
+
+/* ── Intro / loading screen ──────────────────────────────── */
+.intro-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow: hidden;
+  background: oklch(0.16 0.04 60);
+  opacity: 1;
+  transition: opacity 800ms ease, filter 800ms ease;
+}
+
+.intro-leaving {
+  opacity: 0;
+  filter: blur(8px);
+  pointer-events: none;
+}
+
+.intro-art {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  animation: intro-zoom 9s ease-out forwards;
+}
+
+@keyframes intro-zoom {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.intro-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(80% 50% at 50% 20%, transparent, oklch(0.12 0.04 60 / 0.35)),
+    linear-gradient(to top, oklch(0.1 0.03 60 / 0.95) 8%, oklch(0.1 0.03 60 / 0.35) 45%, transparent 70%);
+}
+
+.intro-content {
+  position: absolute;
+  inset-inline: 0;
+  bottom: max(2.5rem, env(safe-area-inset-bottom));
+  display: grid;
+  justify-items: center;
+  gap: 0.65rem;
+  padding-inline: 1.5rem;
+  text-align: center;
+}
+
+.intro-title {
+  display: flex;
+  gap: 0.6rem;
+  font-size: clamp(2.2rem, 11vw, 4rem);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  color: oklch(0.97 0.02 90);
+  text-shadow: 0 4px 18px oklch(0.1 0.03 60 / 0.8);
+  animation: intro-rise 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.intro-title-accent {
+  background: linear-gradient(180deg, var(--gold), var(--gold-deep));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.intro-sub {
+  font-size: 0.95rem;
+  letter-spacing: 0.25em;
+  color: color-mix(in oklab, var(--gold) 75%, white);
+  animation: intro-rise 900ms 120ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes intro-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.intro-bar {
+  position: relative;
+  width: min(560px, 100%);
+  height: 14px;
+  margin-top: 0.6rem;
+  border-radius: 999px;
+  background: oklch(0.2 0.03 60 / 0.75);
+  border: 1px solid color-mix(in oklab, var(--gold) 55%, transparent);
+  box-shadow: inset 0 2px 6px oklch(0 0 0 / 0.6);
+  overflow: hidden;
+}
+
+.intro-bar-fill {
+  position: relative;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold));
+  box-shadow: 0 0 14px color-mix(in oklab, var(--gold) 70%, transparent);
+  transition: width 120ms linear;
+}
+
+.intro-bar-shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    oklch(1 0 0 / 0.55) 45%,
+    transparent 70%
+  );
+  animation: intro-shine 1.6s linear infinite;
+}
+
+@keyframes intro-shine {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.intro-meta {
+  display: flex;
+  width: min(560px, 100%);
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: oklch(0.95 0.01 90 / 0.85);
+}
+
+.intro-pct {
+  font-variant-numeric: tabular-nums;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-art,
+  .intro-bar-shine,
+  .intro-title,
+  .intro-sub {
+    animation: none;
+  }
+}
+
+/* ── Luxury background shop ──────────────────────────────── */
+.shop-panel {
+  background:
+    radial-gradient(120% 70% at 50% -10%, color-mix(in oklab, var(--gold) 14%, transparent), transparent 65%),
+    linear-gradient(160deg, oklch(0.22 0.05 250 / 0.96), oklch(0.14 0.04 255 / 0.98));
+  border: 1px solid color-mix(in oklab, var(--gold) 45%, transparent);
+  box-shadow:
+    0 30px 70px oklch(0 0 0 / 0.6),
+    inset 0 1px 0 color-mix(in oklab, var(--gold) 35%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.shop-card {
+  border: 1px solid oklch(1 0 0 / 0.12);
+  box-shadow: 0 10px 24px oklch(0 0 0 / 0.45);
+  transition:
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 260ms ease,
+    border-color 260ms ease;
+}
+
+.shop-card:hover {
+  transform: translateY(-6px);
+  border-color: color-mix(in oklab, var(--gold) 65%, transparent);
+  box-shadow:
+    0 18px 34px oklch(0 0 0 / 0.55),
+    0 0 22px color-mix(in oklab, var(--gold) 35%, transparent);
+}
+
+.shop-card-active {
+  border-color: var(--gold);
+  box-shadow:
+    0 0 0 2px color-mix(in oklab, var(--gold) 70%, transparent),
+    0 0 26px color-mix(in oklab, var(--gold) 45%, transparent);
+}
+
+.shop-sheen {
+  background: linear-gradient(115deg, transparent 40%, oklch(1 0 0 / 0.35) 50%, transparent 60%);
+  transform: translateX(-130%);
+  transition: transform 900ms ease;
+}
+
+.shop-card:hover .shop-sheen {
+  transform: translateX(130%);
+}
+
+.shop-card-in {
+  animation: shop-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes shop-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-card-in,
+  .shop-sheen {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ── Fish market: quantity slider ────────────────────────── */
+.fish-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 0.85rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold), oklch(0.98 0.02 90));
+  border: 1px solid oklch(0 0 0 / 0.35);
+  box-shadow: inset 0 2px 6px oklch(0 0 0 / 0.45);
+  outline: none;
+}
+.fish-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 1.5rem;
+  width: 1.5rem;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, oklch(1 0 0), oklch(0.85 0.02 90));
+  border: 2px solid oklch(0.3 0.05 60);
+  box-shadow: 0 4px 10px oklch(0 0 0 / 0.55);
+  cursor: pointer;
+}
+.fish-range::-moz-range-thumb {
+  height: 1.4rem;
+  width: 1.4rem;
+  border-radius: 999px;
+  background: oklch(1 0 0);
+  border: 2px solid oklch(0.3 0.05 60);
+  cursor: pointer;
+}
+
+/* ── Net cast animation ──────────────────────────────────── */
+.net-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: oklch(0.08 0.03 250 / 0.82);
+  backdrop-filter: blur(6px);
+}
+.net-water {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 42%;
+  background: linear-gradient(180deg, oklch(0.55 0.12 230 / 0.35), oklch(0.28 0.09 240 / 0.9));
+  animation: net-swell 3s ease-in-out infinite;
+}
+@keyframes net-swell {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(-2%) scaleY(1.04); }
+}
+.net-img {
+  position: relative;
+  width: min(58vw, 18rem);
+  object-fit: contain;
+  filter: drop-shadow(0 18px 26px oklch(0 0 0 / 0.6));
+}
+.net-throw { animation: net-throw 750ms cubic-bezier(0.3, 0.9, 0.4, 1) both; }
+.net-splash { animation: net-splash 750ms ease-out both; }
+.net-haul { animation: net-haul 900ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes net-throw {
+  from { transform: translate(40%, -70%) rotate(-40deg) scale(0.5); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes net-splash {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08) translateY(6%); }
+  100% { transform: scale(1) translateY(3%); }
+}
+@keyframes net-haul {
+  from { transform: translateY(10%) scale(1); }
+  to { transform: translateY(-12%) scale(1.05); }
+}
+.net-ripple {
+  position: absolute;
+  bottom: 28%;
+  height: 6rem;
+  width: 6rem;
+  border-radius: 999px;
+  border: 2px solid oklch(0.95 0.03 220 / 0.7);
+  animation: net-ripple 1.6s ease-out infinite;
+}
+.net-ripple-2 { animation-delay: 0.6s; }
+@keyframes net-ripple {
+  from { transform: scale(0.4); opacity: 0.8; }
+  to { transform: scale(2.6); opacity: 0; }
+}
+.net-loot {
+  position: absolute;
+  bottom: 22%;
+  display: flex;
+  gap: 0.75rem;
+}
+.net-loot li { animation: loot-pop 520ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.net-loot img { height: 3rem; width: 3rem; object-fit: contain; filter: drop-shadow(0 6px 12px oklch(0 0 0 / 0.6)); }
+@keyframes loot-pop {
+  from { transform: translateY(30px) scale(0.4); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.net-caption {
+  position: absolute;
+  top: 12%;
+  font-weight: 900;
+  color: var(--gold);
+  text-shadow: 0 2px 10px oklch(0 0 0 / 0.8);
+}
+
+/* ── Shipyard cards & action sheet ───────────────────────── */
+.ship-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-radius: 1.25rem;
+  padding: 0.75rem;
+  background: linear-gradient(150deg, oklch(0.26 0.05 250 / 0.9), oklch(0.15 0.04 255 / 0.95));
+  border: 1px solid color-mix(in oklab, var(--gold) 35%, transparent);
+  box-shadow: 0 14px 30px oklch(0 0 0 / 0.5);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease, border-color 220ms ease;
+}
+.ship-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold);
+  box-shadow: 0 20px 40px oklch(0 0 0 / 0.6), 0 0 22px color-mix(in oklab, var(--gold) 30%, transparent);
+}
+.ship-sheet {
+  position: relative;
+  width: min(100%, 26rem);
+  border-radius: 1.5rem;
+  padding: 1rem;
+  background:
+    radial-gradient(120% 60% at 50% 0%, color-mix(in oklab, var(--gold) 16%, transparent), transparent 60%),
+    linear-gradient(165deg, oklch(0.24 0.05 250 / 0.97), oklch(0.13 0.04 255 / 0.99));
+  border: 1px solid color-mix(in oklab, var(--gold) 55%, transparent);
+  box-shadow: 0 30px 70px oklch(0 0 0 / 0.65);
+  animation: shop-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.act-btn {
+  display: grid;
+  place-items: center;
+  gap: 0.15rem;
+  border-radius: 1rem;
+  padding: 0.5rem 0.7rem;
+  background: oklch(0 0 0 / 0.4);
+  border: 1px solid oklch(1 0 0 / 0.12);
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+.act-btn:hover { transform: translateY(-3px); border-color: color-mix(in oklab, var(--gold) 60%, transparent); }
+.act-btn-on {
+  border-color: var(--gold);
+  background: color-mix(in oklab, var(--gold) 18%, transparent);
+  box-shadow: 0 0 20px color-mix(in oklab, var(--gold) 35%, transparent);
+}
+
+/* ── Daily quests board ──────────────────────────────────── */
+.quest-board {
+  margin-top: 1rem;
+  border-radius: 1.25rem;
+  padding: 0.85rem;
+  background: linear-gradient(160deg, oklch(0.24 0.05 250 / 0.92), oklch(0.14 0.04 255 / 0.96));
+  border: 1px solid color-mix(in oklab, var(--gold) 40%, transparent);
+  box-shadow: 0 18px 40px oklch(0 0 0 / 0.5);
+}
+.quest-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
+}
+.quest-head h2 { flex: 1; font-weight: 900; color: var(--gold); }
+.quest-gems {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 999px;
+  background: oklch(0 0 0 / 0.45);
+  padding: 0.2rem 0.6rem;
+  font-weight: 900;
+  color: var(--gold);
+}
+.quest-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: 1rem;
+  padding: 0.55rem;
+  background: oklch(0 0 0 / 0.35);
+  border: 1px solid oklch(1 0 0 / 0.08);
+}
+.quest-row-done { border-color: color-mix(in oklab, var(--gold) 60%, transparent); }
+.quest-bar {
+  margin-top: 0.35rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: oklch(1 0 0 / 0.12);
+  overflow: hidden;
+}
+.quest-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold));
+  transition: width 400ms ease;
+}
+.quest-claim {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 0.9rem;
+  padding: 0.45rem 0.7rem;
+  font-weight: 900;
+  color: oklch(0.15 0.02 250);
+  background: linear-gradient(180deg, var(--gold), var(--gold-deep));
+  box-shadow: 0 8px 18px oklch(0 0 0 / 0.45);
+  transition: filter 160ms ease;
+}
+.quest-claim:hover:not(:disabled) { filter: brightness(1.12); }
+.quest-claim:disabled { opacity: 0.4; }
+
+/* ── Daily login reward ──────────────────────────────────── */
+.daily-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: oklch(0 0 0 / 0.7);
+  backdrop-filter: blur(8px);
+}
+.daily-panel {
+  position: relative;
+  width: min(100%, 24rem);
+  border-radius: 1.5rem;
+  padding: 1.1rem;
+  color: oklch(0.98 0.01 90);
+  background:
+    radial-gradient(120% 60% at 50% 0%, color-mix(in oklab, var(--gold) 18%, transparent), transparent 60%),
+    linear-gradient(165deg, oklch(0.24 0.05 250 / 0.97), oklch(0.12 0.04 255 / 0.99));
+  border: 1px solid color-mix(in oklab, var(--gold) 55%, transparent);
+  box-shadow: 0 30px 70px oklch(0 0 0 / 0.65);
+  animation: shop-in 340ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.daily-title {
+  margin-bottom: 0.25rem;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: var(--gold);
+}
+.daily-cell {
+  display: grid;
+  place-items: center;
+  gap: 0.15rem;
+  border-radius: 0.9rem;
+  padding: 0.5rem 0.25rem;
+  background: oklch(0 0 0 / 0.4);
+  border: 1px solid oklch(1 0 0 / 0.1);
+}
+.daily-cell-past { opacity: 0.45; }
+.daily-cell-now {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px color-mix(in oklab, var(--gold) 40%, transparent);
+}
+.daily-claim {
+  margin-top: 0.9rem;
+  width: 100%;
+  border-radius: 1rem;
+  padding: 0.6rem;
+  font-weight: 900;
+  color: oklch(0.15 0.02 250);
+  background: linear-gradient(180deg, var(--gold), var(--gold-deep));
+  box-shadow: 0 12px 26px oklch(0 0 0 / 0.5);
+  transition: filter 160ms ease;
+}
+.daily-claim:hover { filter: brightness(1.12); }
+
+/* ── Auth & chat polish ──────────────────────────────────── */
+.auth-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/img/intro.jpg");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.28;
+  filter: saturate(1.1);
+}
+.chat-bubble-me {
+  background: linear-gradient(200deg, var(--gold), var(--gold-deep));
+  color: oklch(0.16 0.02 250);
+}
+.chat-bubble-them {
+  background: linear-gradient(200deg, oklch(0.32 0.05 250 / 0.95), oklch(0.2 0.04 255 / 0.95));
+  border: 1px solid oklch(1 0 0 / 0.1);
+}

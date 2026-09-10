@@ -1,18 +1,25 @@
 import { useCallback, useEffect, useState } from "react";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { MessageCircle, Moon, Sun } from "lucide-react";
 
 import { IntroLoader } from "@/components/IntroLoader";
 import { BackgroundShop } from "@/components/BackgroundShop";
+import { GameWindow } from "@/components/GameWindow";
+import { TradingFloor } from "@/components/TradingFloor";
 import { TopHud } from "@/components/TopHud";
 import { DailyReward } from "@/components/DailyReward";
 import { QuestBoard } from "@/components/QuestBoard";
 import { usePlayer } from "@/hooks/usePlayer";
 import { saveThemeToAccount } from "@/lib/player";
-import { isMuted, playSfx, setMuted, startAmbient, stopAllSounds } from "@/lib/sound";
+import { isMuted, playAmbient, playSfx, setMuted, stopAllSounds } from "@/lib/sound";
+import { FishMarket } from "@/routes/fish-market";
+import { Shipyard } from "@/routes/shipyard";
+import { ChatPage } from "@/routes/chat";
+import { SettingsPage } from "@/routes/settings";
 import {
   currentPhase,
   defaultTheme,
+  getAmbient,
   getScene,
   getTheme,
   hotspots,
@@ -29,13 +36,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "خليج حي بخلفيات فيديو متحركة ودورة نهار وليل كل ٦ ساعات، مع سوق السمك ومصنع السفن.",
+          "خليج حي بخلفيات فيديو متحركة ودورة نهار وليل، مع سوق السمك وسوق السفن وشاشة تداول كاملة.",
       },
       { property: "og:title", content: "خليج الجزيرة — Island Bay" },
       {
         property: "og:description",
         content:
-          "خليج حي بخلفيات فيديو متحركة ودورة نهار وليل كل ٦ ساعات، مع سوق السمك ومصنع السفن.",
+          "خليج حي بخلفيات فيديو متحركة ودورة نهار وليل، مع سوق السمك وسوق السفن وشاشة تداول كاملة.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -46,13 +53,16 @@ export const Route = createFileRoute("/")({
 
 const actions = [
   { key: "house", src: "/img/house.png", label: "القرية" },
-  { key: "stats", src: "/img/stats.png", label: "الإحصائيات" },
-  { key: "chest", src: "/img/chest.png", label: "المخزن" },
+  { key: "stats", src: "/img/stats.png", label: "سوق السمك" },
+  { key: "chest", src: "/img/chest.png", label: "سوق السفن" },
   { key: "shop", src: "/img/shop.png", label: "المتجر" },
   { key: "quest", src: "/img/quest.png", label: "المهام" },
   { key: "skull", src: "/img/skull.png", label: "المعركة" },
   { key: "friends", src: "/img/friends.png", label: "الأصدقاء" },
 ];
+
+/** Every destination lives as a floating window over the living sea. */
+type Win = "chat" | "settings" | "fish" | "ship" | "trade-fish" | "trade-ship" | null;
 
 function Index() {
   const navigate = useNavigate();
@@ -62,14 +72,16 @@ function Index() {
   const [themeId, setThemeId] = useState(defaultTheme.id);
   const [shopOpen, setShopOpen] = useState(false);
   const [questsOpen, setQuestsOpen] = useState(false);
+  const [win, setWin] = useState<Win>(null);
   const [phase, setPhase] = useState(currentPhase());
 
   const theme = getTheme(themeId);
   const scene = getScene(theme, phase);
+  const ambient = getAmbient(theme, phase);
 
   useEffect(() => setThemeId(loadThemeId()), []);
 
-  // Flip the world between day and night every six hours.
+  // Flip the world between day and night on the player's own clock.
   useEffect(() => {
     const t = window.setTimeout(() => setPhase(currentPhase()), msUntilNextPhase() + 500);
     return () => window.clearTimeout(t);
@@ -91,17 +103,11 @@ function Index() {
 
   const finishIntro = useCallback(() => setIntro(false), []);
 
+  // The bed follows whichever world is on screen, day or night.
   useEffect(() => {
     if (intro) return;
-    const unlock = () => startAmbient();
-    window.addEventListener("pointerdown", unlock, { once: true });
-    window.addEventListener("keydown", unlock, { once: true });
-    startAmbient();
-    return () => {
-      window.removeEventListener("pointerdown", unlock);
-      window.removeEventListener("keydown", unlock);
-    };
-  }, [intro]);
+    playAmbient(ambient, 0.35);
+  }, [intro, ambient]);
 
   useEffect(() => stopAllSounds, []);
 
@@ -109,7 +115,12 @@ function Index() {
     const next = isMuted();
     setMuted(!next);
     setSound(next);
-    if (next) startAmbient();
+    if (next) playAmbient(ambient, 0.35);
+  };
+
+  const open = (w: Win) => {
+    playSfx("click", 0.7);
+    setWin(w);
   };
 
   return (
@@ -136,16 +147,12 @@ function Index() {
             className="hotspot"
             style={{ left: `${h.x}%`, top: `${h.y}%`, width: `${h.w}%`, height: `${h.h}%` }}
             onPointerEnter={() => playSfx("hover", 0.3)}
-            onClick={() => {
-              playSfx("click", 0.75);
-              void navigate({ to: h.to });
-            }}
+            onClick={() => open(h.id === "fish" ? "trade-fish" : "trade-ship")}
           >
             <span className="hotspot-ring" />
           </button>
         ))}
       </div>
-
 
       {/* Top HUD */}
       <div className="absolute inset-x-0 top-0 z-10 px-1 pt-[max(0.35rem,env(safe-area-inset-top))]">
@@ -154,15 +161,15 @@ function Index() {
 
       {/* Controls */}
       <div className="absolute left-3 top-[max(4.5rem,calc(env(safe-area-inset-top)+4.2rem))] z-10 flex flex-col items-center gap-2">
-        <Link
-          to="/chat"
-          aria-label="الدردشة"
-          onClick={() => playSfx("click", 0.6)}
+        <button type="button" aria-label="الدردشة" className="ctl-btn" onClick={() => open("chat")}>
+          <MessageCircle className="h-5 w-5" />
+        </button>
+        <button
+          type="button"
+          onClick={toggleSound}
+          aria-label={sound ? "كتم الصوت" : "تشغيل الصوت"}
           className="ctl-btn"
         >
-          <MessageCircle className="h-5 w-5" />
-        </Link>
-        <button type="button" onClick={toggleSound} aria-label={sound ? "كتم الصوت" : "تشغيل الصوت"} className="ctl-btn">
           <img src={sound ? "/img/sound-on.png" : "/img/sound-off.png"} alt="" className="h-6 w-6 object-contain" />
         </button>
         <span className="phase-chip">
@@ -186,8 +193,9 @@ function Index() {
                   playSfx("click", 0.75);
                   if (a.key === "shop") setShopOpen(true);
                   else if (a.key === "quest") setQuestsOpen(true);
-                  else if (a.key === "chest") void navigate({ to: "/shipyard" });
-                  else if (a.key === "stats") void navigate({ to: "/fish-market" });
+                  else if (a.key === "chest") setWin("ship");
+                  else if (a.key === "stats") setWin("fish");
+                  else if (a.key === "house") setWin("settings");
                   else if (a.key === "friends") void navigate({ to: "/friends" });
                 }}
               >
@@ -216,6 +224,32 @@ function Index() {
             </button>
           </div>
         </div>
+      )}
+
+      {win === "chat" && (
+        <GameWindow title="الدردشة" hint="تحدث مع القباطنة" size="lg" onClose={() => setWin(null)}>
+          <ChatPage />
+        </GameWindow>
+      )}
+      {win === "settings" && (
+        <GameWindow title="الإعدادات" size="md" onClose={() => setWin(null)}>
+          <SettingsPage />
+        </GameWindow>
+      )}
+      {win === "fish" && (
+        <GameWindow title="سوق السمك" hint="بع صيدك وطوّر شباكك" size="lg" onClose={() => setWin(null)}>
+          <FishMarket />
+        </GameWindow>
+      )}
+      {win === "ship" && (
+        <GameWindow title="سوق السفن" hint="اشترِ وطوّر أسطولك" size="lg" onClose={() => setWin(null)}>
+          <Shipyard />
+        </GameWindow>
+      )}
+      {(win === "trade-fish" || win === "trade-ship") && (
+        <GameWindow title="قاعة التداول" hint="أسعار حيّة وأوامر شراء وبيع" size="xl" onClose={() => setWin(null)}>
+          <TradingFloor start={win === "trade-fish" ? "fish" : "ship"} />
+        </GameWindow>
       )}
 
       {!intro && <DailyReward />}

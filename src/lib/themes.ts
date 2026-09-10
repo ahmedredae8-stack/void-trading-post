@@ -18,6 +18,20 @@ import wallNightVid from "@/assets/scenes/wall-night.mp4.asset.json";
 import wallNightImg from "@/assets/scenes/wall-night.jpg.asset.json";
 import wallBurnedVid from "@/assets/scenes/wall-burned.mp4.asset.json";
 import wallBurnedImg from "@/assets/scenes/wall-burned.jpg.asset.json";
+import eiffelDayVid from "@/assets/scenes/eiffel-day.mp4.asset.json";
+import eiffelDayImg from "@/assets/scenes/eiffel-day.jpg.asset.json";
+import eiffelNightVid from "@/assets/scenes/eiffel-night.mp4.asset.json";
+import eiffelNightImg from "@/assets/scenes/eiffel-night.jpg.asset.json";
+import eiffelBurnedVid from "@/assets/scenes/eiffel-burned.mp4.asset.json";
+import eiffelBurnedImg from "@/assets/scenes/eiffel-burned.jpg.asset.json";
+
+/** Scene media lives on the Lovable CDN. Outside Lovable hosting (e.g. Vercel)
+ *  the relative /__l5e path 404s, so always resolve to the absolute CDN origin. */
+const CDN_ORIGIN = "https://void-trading-post.lovable.app";
+
+function cdn(url: string) {
+  return url.startsWith("/__l5e/") ? CDN_ORIGIN + url : url;
+}
 
 export type Phase = "day" | "night";
 
@@ -40,34 +54,42 @@ export const themes: Theme[] = [
   {
     id: "spring",
     name: "وادي الربيع",
-    day: { video: springDayVid.url, poster: springDayImg.url },
-    night: { video: springNightVid.url, poster: springNightImg.url },
+    day: { video: cdn(springDayVid.url), poster: cdn(springDayImg.url) },
+    night: { video: cdn(springNightVid.url), poster: cdn(springNightImg.url) },
     ambient: { day: "waves", night: "night" },
   },
   {
     id: "bay",
     name: "الخليج الأساسي",
     // No day clip has been supplied for this world yet — it stays a night bay.
-    day: { video: bayNightVid.url, poster: bayNightImg.url },
-    night: { video: bayNightVid.url, poster: bayNightImg.url },
-    burned: { video: bayBurnedVid.url, poster: bayBurnedImg.url },
+    day: { video: cdn(bayNightVid.url), poster: cdn(bayNightImg.url) },
+    night: { video: cdn(bayNightVid.url), poster: cdn(bayNightImg.url) },
+    burned: { video: cdn(bayBurnedVid.url), poster: cdn(bayBurnedImg.url) },
     ambient: { day: "night", night: "night" },
   },
   {
     id: "winter",
     name: "الخليج الثلجي",
-    day: { video: winterDayVid.url, poster: winterDayImg.url },
-    night: { video: winterNightVid.url, poster: winterNightImg.url },
-    burned: { video: winterBurnedVid.url, poster: winterBurnedImg.url },
+    day: { video: cdn(winterDayVid.url), poster: cdn(winterDayImg.url) },
+    night: { video: cdn(winterNightVid.url), poster: cdn(winterNightImg.url) },
+    burned: { video: cdn(winterBurnedVid.url), poster: cdn(winterBurnedImg.url) },
     ambient: { day: "winter", night: "winter" },
   },
   {
     id: "wall",
     name: "سور الصين العظيم",
-    day: { video: wallDayVid.url, poster: wallDayImg.url },
-    night: { video: wallNightVid.url, poster: wallNightImg.url },
-    burned: { video: wallBurnedVid.url, poster: wallBurnedImg.url },
+    day: { video: cdn(wallDayVid.url), poster: cdn(wallDayImg.url) },
+    night: { video: cdn(wallNightVid.url), poster: cdn(wallNightImg.url) },
+    burned: { video: cdn(wallBurnedVid.url), poster: cdn(wallBurnedImg.url) },
     ambient: { day: "wall", night: "wall" },
+  },
+  {
+    id: "eiffel",
+    name: "برج إيفل",
+    day: { video: cdn(eiffelDayVid.url), poster: cdn(eiffelDayImg.url) },
+    night: { video: cdn(eiffelNightVid.url), poster: cdn(eiffelNightImg.url) },
+    burned: { video: cdn(eiffelBurnedVid.url), poster: cdn(eiffelBurnedImg.url) },
+    ambient: { day: "waves", night: "night" },
   },
 ];
 

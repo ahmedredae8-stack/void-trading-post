@@ -1,5 +1,7 @@
 import bayNightVid from "@/assets/scenes/bay-night.mp4.asset.json";
 import bayNightImg from "@/assets/scenes/bay-night.jpg.asset.json";
+import bayDayVid from "@/assets/scenes/bay-day.mp4.asset.json";
+import bayDayImg from "@/assets/scenes/bay-day.jpg.asset.json";
 import bayBurnedVid from "@/assets/scenes/bay-burned.mp4.asset.json";
 import bayBurnedImg from "@/assets/scenes/bay-burned.jpg.asset.json";
 import springDayVid from "@/assets/scenes/spring-day.mp4.asset.json";
@@ -61,11 +63,10 @@ export const themes: Theme[] = [
   {
     id: "bay",
     name: "الخليج الأساسي",
-    // No day clip has been supplied for this world yet — it stays a night bay.
-    day: { video: cdn(bayNightVid.url), poster: cdn(bayNightImg.url) },
+    day: { video: cdn(bayDayVid.url), poster: cdn(bayDayImg.url) },
     night: { video: cdn(bayNightVid.url), poster: cdn(bayNightImg.url) },
     burned: { video: cdn(bayBurnedVid.url), poster: cdn(bayBurnedImg.url) },
-    ambient: { day: "night", night: "night" },
+    ambient: { day: "waves", night: "night" },
   },
   {
     id: "winter",

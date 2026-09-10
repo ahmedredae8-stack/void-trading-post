@@ -18,6 +18,20 @@ import wallNightVid from "@/assets/scenes/wall-night.mp4.asset.json";
 import wallNightImg from "@/assets/scenes/wall-night.jpg.asset.json";
 import wallBurnedVid from "@/assets/scenes/wall-burned.mp4.asset.json";
 import wallBurnedImg from "@/assets/scenes/wall-burned.jpg.asset.json";
+import eiffelDayVid from "@/assets/scenes/eiffel-day.mp4.asset.json";
+import eiffelDayImg from "@/assets/scenes/eiffel-day.jpg.asset.json";
+import eiffelNightVid from "@/assets/scenes/eiffel-night.mp4.asset.json";
+import eiffelNightImg from "@/assets/scenes/eiffel-night.jpg.asset.json";
+import eiffelBurnedVid from "@/assets/scenes/eiffel-burned.mp4.asset.json";
+import eiffelBurnedImg from "@/assets/scenes/eiffel-burned.jpg.asset.json";
+
+/** Scene media lives on the Lovable CDN. Outside Lovable hosting (e.g. Vercel)
+ *  the relative /__l5e path 404s, so always resolve to the absolute CDN origin. */
+const CDN_ORIGIN = "https://void-trading-post.lovable.app";
+
+function cdn(url: string) {
+  return url.startsWith("/__l5e/") ? CDN_ORIGIN + url : url;
+}
 
 export type Phase = "day" | "night";
 

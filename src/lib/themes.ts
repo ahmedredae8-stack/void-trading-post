@@ -40,7 +40,7 @@ export type Phase = "day" | "night";
 export type Scene = { video: string; poster: string };
 
 /** Ambient soundtrack key played while a world is on screen. */
-export type AmbientKey = "waves" | "night" | "winter" | "wall";
+export type AmbientKey = "waves" | "night" | "winter" | "wall" | "spring" | "city";
 
 export type Theme = {
   id: string;
@@ -58,7 +58,7 @@ export const themes: Theme[] = [
     name: "وادي الربيع",
     day: { video: cdn(springDayVid.url), poster: cdn(springDayImg.url) },
     night: { video: cdn(springNightVid.url), poster: cdn(springNightImg.url) },
-    ambient: { day: "waves", night: "night" },
+    ambient: { day: "spring", night: "night" },
   },
   {
     id: "bay",
@@ -90,7 +90,7 @@ export const themes: Theme[] = [
     day: { video: cdn(eiffelDayVid.url), poster: cdn(eiffelDayImg.url) },
     night: { video: cdn(eiffelNightVid.url), poster: cdn(eiffelNightImg.url) },
     burned: { video: cdn(eiffelBurnedVid.url), poster: cdn(eiffelBurnedImg.url) },
-    ambient: { day: "waves", night: "night" },
+    ambient: { day: "city", night: "city" },
   },
 ];
 

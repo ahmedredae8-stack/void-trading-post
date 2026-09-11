@@ -19,6 +19,8 @@ const AMBIENT = {
   night: "/sfx/night.mp3",
   winter: "/sfx/winter.mp3",
   wall: "/sfx/wall.mp3",
+  spring: "/sfx/spring.mp3",
+  city: "/sfx/city.mp3",
 } as const;
 
 export type SfxKey = keyof typeof SFX;

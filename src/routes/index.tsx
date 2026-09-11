@@ -53,8 +53,6 @@ export const Route = createFileRoute("/")({
 
 const actions = [
   { key: "house", src: "/img/house.png", label: "القرية" },
-  { key: "stats", src: "/img/stats.png", label: "سوق السمك" },
-  { key: "chest", src: "/img/chest.png", label: "سوق السفن" },
   { key: "shop", src: "/img/shop.png", label: "المتجر" },
   { key: "quest", src: "/img/quest.png", label: "المهام" },
   { key: "skull", src: "/img/skull.png", label: "المعركة" },
@@ -147,7 +145,7 @@ function Index() {
             className="hotspot"
             style={{ left: `${h.x}%`, top: `${h.y}%`, width: `${h.w}%`, height: `${h.h}%` }}
             onPointerEnter={() => playSfx("hover", 0.3)}
-            onClick={() => open(h.id === "fish" ? "trade-fish" : "trade-ship")}
+            onClick={() => open(h.id === "fish" ? "fish" : "ship")}
           >
             <span className="hotspot-ring" />
           </button>
@@ -193,8 +191,6 @@ function Index() {
                   playSfx("click", 0.75);
                   if (a.key === "shop") setShopOpen(true);
                   else if (a.key === "quest") setQuestsOpen(true);
-                  else if (a.key === "chest") setWin("ship");
-                  else if (a.key === "stats") setWin("fish");
                   else if (a.key === "house") setWin("settings");
                   else if (a.key === "friends") void navigate({ to: "/friends" });
                 }}

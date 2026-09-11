@@ -53,8 +53,6 @@ export const Route = createFileRoute("/")({
 
 const actions = [
   { key: "house", src: "/img/house.png", label: "القرية" },
-  { key: "stats", src: "/img/stats.png", label: "سوق السمك" },
-  { key: "chest", src: "/img/chest.png", label: "سوق السفن" },
   { key: "shop", src: "/img/shop.png", label: "المتجر" },
   { key: "quest", src: "/img/quest.png", label: "المهام" },
   { key: "skull", src: "/img/skull.png", label: "المعركة" },

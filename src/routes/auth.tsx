@@ -3,6 +3,7 @@ import { Loader2 } from "lucide-react";
 
 import { NameGate } from "@/components/NameGate";
 import { usePlayer } from "@/hooks/usePlayer";
+import { currentPhase, defaultTheme, getScene } from "@/lib/themes";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -27,23 +28,27 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const { player, loading, setPlayer } = usePlayer();
   const navigate = useNavigate();
+  const scene = getScene(defaultTheme, currentPhase());
 
   if (!loading && player) {
     void navigate({ to: "/", replace: true });
   }
 
   return (
-    <main className="relative min-h-[100svh] bg-[oklch(0.17_0.04_250)] text-white">
-      <div className="pointer-events-none absolute inset-0 opacity-45 [background:radial-gradient(60%_45%_at_80%_0%,color-mix(in_oklab,var(--sea-light)_28%,transparent),transparent),radial-gradient(50%_40%_at_10%_100%,color-mix(in_oklab,var(--gold)_18%,transparent),transparent)]" />
-      <div className="relative">
-        {loading ? (
-          <div className="flex min-h-[100svh] items-center justify-center">
-            <Loader2 className="h-7 w-7 animate-spin text-[var(--gold)]" />
-          </div>
-        ) : (
-          <NameGate onReady={(p) => { setPlayer(p); void navigate({ to: "/", replace: true }); }} />
-        )}
-      </div>
+    <main className="auth-stage bg-[oklch(0.12_0.04_250)] text-white">
+      <video className="auth-scene" src={scene.video} poster={scene.poster} autoPlay loop muted playsInline />
+      {loading ? (
+        <div className="relative z-10 grid place-items-center">
+          <Loader2 className="h-7 w-7 animate-spin text-[var(--gold)]" />
+        </div>
+      ) : (
+        <NameGate
+          onReady={(p) => {
+            setPlayer(p);
+            void navigate({ to: "/", replace: true });
+          }}
+        />
+      )}
     </main>
   );
 }

@@ -1,16 +1,8 @@
 # Roadmap
-- [ ] Correct responsive top HUD and lock mobile viewport gestures
-- [ ] Create original weapon, crew, and captain artwork
-- [ ] Build complete ships/weapons/crew store presentation and quest hooks
-- [ ] Replace chat presentation with premium game UI
-- [ ] Add account settings screen
-- [ ] Upgrade friends and add tribes presentation
-- [ ] Verify build and key routes on phone and desktop
-- [ ] Capture and diagnose the current sea HUD layout and production audio behavior
-- [ ] Open primary game actions as useful overlays above the sea instead of standalone pages
-- [ ] Create an original illustrated fish-market trading scene with price fluctuations
-- [ ] Rebuild chat and sign-in so they read as premium game interfaces
-- [ ] Connect the new HUD and modal windows to the live sea home screen
-- [ ] Add captain portrait selection to account settings
-- [ ] Restore a distinct ambient soundtrack for each video world
-- [ ] Finish styling for all newly added game panels
+- [ ] Install the seven new dock images and remove the home/duplicate chat controls
+- [ ] Connect the unified store window with worlds, ships, weapons, crews, armor, top-ups, and VIP
+- [ ] Add secure tribe chat and join-request flows
+- [ ] Rebuild the shipyard as a three-ship interactive sea scene
+- [ ] Run the ship sailing, turning, net-casting, catch, and return sequence over the sea
+- [ ] Fix day/night hydration so the background never jumps on first load
+- [ ] Verify build, phone layouts, interactions, production media, and audio
